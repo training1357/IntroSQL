@@ -1,0 +1,409 @@
+01. Install VMWare Workstation Player
+	- Enable Virtualization di BIOS
+	- VMware-player-full-16.2.4-20089737.exe
+	
+02. Extract image VM
+	- VM.zip
+	
+03. Open Image dengan VMWare Workstation Player
+	- Open file "Windows 10 x64.vmx"
+	- Pilih "I Copied It"
+	
+04. Buat koneksi di SQL Developer
+	Name 		: HR Connection
+	username 	: hr
+	Password 	: Welcome1
+	Hostname 	: localhost
+	Port		: 1521
+	SID			: orcl
+	
+	- Lihat struktur table employees
+	- Lihat data table departments
+	
+05. Akses database menggunakan SQL Plus
+	- Buka terminal
+	
+	$ sqlplus hr/Welcome1
+	SQL> select tname from tab;
+			TNAME
+			--------------------------------------------------------------------------------
+			COUNTRIES
+			DEPARTMENTS
+			EMPLOYEES
+			EMP_DETAILS_VIEW
+			JOBS
+			JOB_GRADES
+			JOB_HISTORY
+			LOCATIONS
+			REGIONS
+			RETIRED_EMPLOYEES
+
+			10 rows selected.
+	
+	SQL> describe employees;
+			 Name                                      Null?    Type
+			 ----------------------------------------- -------- ----------------------------
+			 EMPLOYEE_ID                               NOT NULL NUMBER(6)
+			 FIRST_NAME                                         VARCHAR2(20)
+			 LAST_NAME                                 NOT NULL VARCHAR2(25)
+			 EMAIL                                     NOT NULL VARCHAR2(25)
+			 PHONE_NUMBER                                       VARCHAR2(20)
+			 HIRE_DATE                                 NOT NULL DATE
+			 JOB_ID                                    NOT NULL VARCHAR2(10)
+			 SALARY                                             NUMBER(8,2)
+			 COMMISSION_PCT                                     NUMBER(2,2)
+			 MANAGER_ID                                         NUMBER(6)
+			 DEPARTMENT_ID                                      NUMBER(4)
+ 
+	SQL> select first_name, salary, department_id
+	     from employees
+		 where salary > 4500
+		 order by salary desc;
+
+			FIRST_NAME               SALARY DEPARTMENT_ID
+			-------------------- ---------- -------------
+			Steven                    24000            90
+			Neena                     17000            90
+			Lex                       17000            90
+
+
+=== Training Oracle University ===
+
+01. DBA Track
+	- Introduction SQL
+	- Administration Workshop
+	- Backup Recovery
+	- Performance Tuning
+	- Data Mining
+	- Datawarehousing Administration
+	- RAC
+	- Data Guard
+	- Oracle Advanced Security
+	- ... 
+
+02. Developer Track
+	- Introduction SQL
+	- Program with PL/SQL -> Procedure / Function / Package / Trigger
+	- Advanced PL/SQL
+	- Form Builder / Report Builder
+	- APEX 
+	- JDeveloper
+
+03. Certification
+	- www.oracle.com -> Resources -> Services -> Training & Certification
+	
+	OCA -> OCP -> OCM
+	
+	OCA : Oracle Certified Associate
+	OCP : Oracle Certified Professional
+	OCM : Oracle Certified Master
+
+=== Akses MySQL Database ===
+
+01. Command Line
+	- Buka terminal
+	
+	$ mysql -uroot -p
+		Enter password: Welcome1
+		
+	mysql> show databases;
+		+--------------------+
+		| Database           |
+		+--------------------+
+		| hr                 |
+		| information_schema |
+		| mysql              |
+		| performance_schema |
+		| sys                |
+		+--------------------+
+		5 rows in set (0.10 sec)	
+		
+	mysql> use hr;
+	
+	mysql> show tables;
+
+		+-------------------+
+		| Tables_in_hr      |
+		+-------------------+
+		| countries         |
+		| departments       |
+		| emp_details_view  |
+		| employees         |
+		| job_grades        |
+		| job_history       |
+		| jobs              |
+		| locations         |
+		| regions           |
+		| retired_employees |
+		+-------------------+
+		10 rows in set (0.02 sec)	
+	
+	mysql> desc employees;
+	
+		+----------------+--------------+------+-----+---------+-------+
+		| Field          | Type         | Null | Key | Default | Extra |
+		+----------------+--------------+------+-----+---------+-------+
+		| employee_id    | int unsigned | NO   | PRI | NULL    |       |
+		| first_name     | varchar(20)  | YES  |     | NULL    |       |
+		| last_name      | varchar(25)  | NO   |     | NULL    |       |
+		| email          | varchar(25)  | NO   |     | NULL    |       |
+		| phone_number   | varchar(20)  | YES  |     | NULL    |       |
+		| hire_date      | date         | NO   |     | NULL    |       |
+		| job_id         | varchar(10)  | NO   | MUL | NULL    |       |
+		| salary         | decimal(8,2) | NO   |     | NULL    |       |
+		| commission_pct | decimal(2,2) | YES  |     | NULL    |       |
+		| manager_id     | int unsigned | YES  | MUL | NULL    |       |
+		| department_id  | int unsigned | YES  | MUL | NULL    |       |
+		+----------------+--------------+------+-----+---------+-------+
+		11 rows in set (0.01 sec)	
+		
+	mysql> select first_name, salary, department_id
+			 from employees
+			 where salary > 4500
+			 order by salary desc;
+			 
+		+-------------+----------+---------------+
+		| first_name  | salary   | department_id |
+		+-------------+----------+---------------+
+		| Steven      | 24000.00 |            90 |
+		| Neena       | 17000.00 |            90 |
+		| Lex         | 17000.00 |            90 |
+		...
+		
+
+=== Multiple-Row Subqueries ===		
+
+	salary <ANY (9000, 6000, 4200)
+	= (salary < 9000) OR (salary < 6000) OR (salary < 4200)
+	
+	salary =ANY (9000, 6000, 4200)
+	= (salary = 9000) OR (salary = 6000) OR (salary = 4200)
+	= salary IN (9000, 6000, 4200)
+	
+	salary <ALL (9000, 6000, 4200)
+	= (salary < 9000) AND (salary < 6000) AND (salary < 4200)	
+	
+	salary =ALL (9000, 6000, 4200)
+	= (salary = 9000) AND (salary = 6000) AND (salary = 4200)
+	= NGGAK MUNGKIN TERJADI
+	
+	
+	SELECT emp.last_name
+	FROM   employees emp
+	WHERE  emp.employee_id NOT IN
+							   (SELECT nvl(mgr.manager_id,0)
+								FROM   employees mgr);
+
+
+=== Managing Tables Using DML Statements in Oracle ===
+
+01. Create table depts
+
+	
+	SQL> create table depts as 
+			select * from departments
+			where 1=2;
+	SQL> desc depts;
+	SQL> select * from depts;
+	SQL> INSERT INTO depts(department_id, 
+       department_name, manager_id, location_id)
+		VALUES (70, 'Public Relations', 100, 1700);
+
+02. Create table emps
+	
+	SQL> create table emps as 
+			select * from employees
+			where 1=2;
+	SQL> desc emps;
+	SQL> select * from emps;
+	SQL> INSERT INTO emps (employee_id, first_name, last_name, 
+                 email, phone_number, hire_date, job_id, salary, 
+                 commission_pct, manager_id, department_id)
+		 VALUES (113, 
+                 'Louis', 'Popp', 
+                 'LPOPP', '515.124.4567', 
+                 CURRENT_DATE, 'AC_ACCOUNT', 6900, 
+                 NULL, 205, 110);
+
+03. Create table sales_reps
+	
+	SQL> create table sales_reps as 
+			SELECT employee_id id, last_name name, salary, commission_pct
+			FROM employees
+			where 1=2;
+	SQL> desc sales_reps;
+	SQL> select * from sales_reps;
+
+	SQL> INSERT INTO sales_reps(id, name, salary, commission_pct)
+		  SELECT employee_id, last_name, salary, commission_pct
+		  FROM   employees
+		  WHERE  job_id LIKE '%REP%';
+
+04. Create table copy_emp
+
+	SQL> create table copy_emp as 
+			select * from employees;
+	SQL> desc copy_emp;
+	SQL> select employee_id, last_name, department_id from copy_emp;
+	SQL> UPDATE copy_emp
+			SET department_id = 110;
+	SQL> select employee_id, last_name, department_id from copy_emp;
+
+05. State of Data After ROLLBACK
+
+	SQL> select count(*) from copy_emp;
+		  COUNT(*)
+		----------
+			   107	
+	SQL> DELETE FROM copy_emp;
+			107 rows deleted.
+			
+	SQL> select count(*) from copy_emp;	
+		  COUNT(*)
+		----------
+				 0	
+	SQL> ROLLBACK ;
+	SQL> select count(*) from copy_emp;	
+		  COUNT(*)
+		----------
+			   107
+
+=== Introduction to Data Definition Language in Oracle ===
+
+01. Create table dept
+
+	SQL> CREATE TABLE dept(
+		deptno      NUMBER(2),
+         dname       VARCHAR2(14),
+         loc         VARCHAR2(13),
+         create_date DATE DEFAULT SYSDATE);
+		 
+	SQL> desc dept;
+
+02. DEFAULT Option
+
+	SQL> CREATE TABLE hire_dates(
+			id          NUMBER(8),
+			hire_date DATE DEFAULT SYSDATE
+		 );
+
+	SQL> insert into hire_dates values (10, DEFAULT);
+	SQL> select * from hire_dates;
+
+				ID HIRE_DATE
+		---------- ---------
+				10 22-JUN-23
+
+03. Constraint
+
+	--- Table Dept
+	
+	DROP TABLE dept;
+	
+	CREATE TABLE dept
+	( department_id    NUMBER(4), 
+	  department_name  VARCHAR2(30) CONSTRAINT dept2_name_nn NOT NULL
+	);
+
+	ALTER TABLE dept ADD 
+	( CONSTRAINT dept2_id_pk PRIMARY KEY (department_id)
+	) ;
+
+	describe dept;
+	select * from dept;
+	
+	--- TEST ---
+	
+	insert into dept values(10, 'IT');
+	
+	insert into dept values(NULL, 'HR');
+		ORA-01400: cannot insert NULL into ("HR"."DEPT"."DEPARTMENT_ID")
+		
+	insert into dept values(10, 'HR');
+		ORA-00001: unique constraint (HR.DEPT2_ID_PK) violated
+		
+	insert into dept values(20, NULL);
+		ORA-01400: cannot insert NULL into ("HR"."DEPT"."DEPARTMENT_NAME")
+
+	insert into dept values(20, 'HR');
+	select * from dept;
+
+		DEPARTMENT_ID DEPARTMENT_NAME
+		------------- ------------------------------
+				   10 IT
+				   20 HR	
+
+
+	-- Table emp
+	
+	DROP TABLE emp;
+	
+	CREATE TABLE emp
+	( employee_id    NUMBER(6), 
+	  ename     	 VARCHAR2(25) CONSTRAINT emp2_name_nn NOT NULL,
+	  email          VARCHAR2(25) CONSTRAINT emp2_email_nn NOT NULL,
+	  salary         NUMBER(8,2),
+	  manager_id     NUMBER(6),
+	  department_id  NUMBER(4),
+	  CONSTRAINT     emp2_salary_min CHECK (salary > 0),
+	  CONSTRAINT     emp2_email_uk UNIQUE (email)
+	) ;
+
+	ALTER TABLE emp
+	ADD ( CONSTRAINT     emp2_emp_id_pk PRIMARY KEY (employee_id),
+		  CONSTRAINT     emp2_dept_fk FOREIGN KEY (department_id)
+						             REFERENCES dept(department_id),
+		  CONSTRAINT     emp2_manager_fk FOREIGN KEY (manager_id)
+									 REFERENCES emp(employee_id)
+		) ;
+
+
+	-- Test
+	
+	insert into emp values(101, 'Naruto', 'naruto@xyz.com', 1000, NULL, 10);
+		1 row created.
+		
+	insert into emp values(102, 'Sasuke', 'sasuke@xyz.com', 900, 101, 10);
+		1 row created.
+		
+	select * from emp;	
+		EMPLOYEE_ID ENAME    EMAIL               SALARY MANAGER_ID DEPARTMENT_ID
+		----------- -------- --------------- ---------- ---------- -------------
+				101 Naruto   naruto@xyz.com        1000                       10
+				102 Sasuke   sasuke@xyz.com         900        101            10
+	
+	insert into emp values(103, 'Sakura', 'sakura@xyz.com', -950, 102, 20);
+		ORA-02290: check constraint (HR.EMP2_SALARY_MIN) violated
+
+	insert into emp values(103, 'Sakura', 'sasuke@xyz.com', 950, 102, 20);
+		ORA-00001: unique constraint (HR.EMP2_EMAIL_UK) violated
+
+	insert into emp values(103, 'Sakura', 'sakura@xyz.com', 950, 102, 30);
+		ORA-02291: integrity constraint (HR.EMP2_DEPT_FK) violated - parent key not found
+
+	insert into emp values(103, 'Sakura', 'sakura@xyz.com', 950, 100, 20);
+		ORA-02291: integrity constraint (HR.EMP2_MANAGER_FK) violated - parent key not found
+
+	insert into emp values(103, 'Sakura', 'sakura@xyz.com', 950, 102, 20);
+		1 row created.
+		
+	select * from emp;	
+		EMPLOYEE_ID ENAME    EMAIL               SALARY MANAGER_ID DEPARTMENT_ID
+		----------- -------- --------------- ---------- ---------- -------------
+				101 Naruto   naruto@xyz.com        1000                       10
+				102 Sasuke   sasuke@xyz.com         900        101            10
+				103 Sakura   sakura@xyz.com         950        102            20
+
+
+
+
+
+
+
+
+
+
+
+
+
+
